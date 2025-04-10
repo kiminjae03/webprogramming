@@ -1,0 +1,19 @@
+{
+  "songs": [
+    {
+      "id": "1",
+      "title": "OMG - NewJeans",
+      "votes": 12
+    },
+    {
+      "id": "2",
+      "title": "Seven - Jungkook",
+      "votes": 37
+    },
+    {
+      "id": "3",
+      "title": "Hype Boy - NewJeans",
+      "votes": 21
+    }
+  ]
+}

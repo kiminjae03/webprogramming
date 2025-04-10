@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🎵 노래 투표</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 20px; text-align: center; }
+    .song-box { border: 1px solid #ccc; padding: 10px; margin: 10px auto; width: 300px; border-radius: 12px; background: #f9f9f9; position: relative; }
+    button { margin-top: 8px; }
+    .reasons { text-align: left; margin-top: 10px; font-size: 14px; color: #444; }
+    .emoji-float {
+      font-size: 28px;
+      animation: floatUp 1s ease-out forwards;
+      pointer-events: none;
+      z-index: 100;
+    }
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-50px); }
+    }
+    #chart-container { max-width: 600px; margin: 20px auto; }
+  </style>
+</head>
+<body>
+  <h1>🎵 오늘의 인기곡 투표</h1>
+  <p>좋아하는 노래에 투표하고 이유도 남겨보세요!</p>
+
+  <div id="chart-container">
+    <canvas id="voteChart"></canvas>
+  </div>
+
+  <div id="song-container"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    let songs = [];
+    let voteChart;
+
+    const chartColors = [
+      'rgba(255, 99, 132, 0.6)',
+      'rgba(54, 162, 235, 0.6)',
+      'rgba(255, 206, 86, 0.6)',
+      'rgba(75, 192, 192, 0.6)',
+      'rgba(153, 102, 255, 0.6)'
+    ];
+
+    socket.on('scoreUpdate', (updatedSongs) => {
+      songs = updatedSongs;
+      updateScores();
+      updateChart();
+    });
+
+    function updateScores() {
+      const container = document.getElementById('song-container');
+      container.innerHTML = '';
+
+      songs.forEach((song, i) => {
+        const box = document.createElement('div');
+        box.className = 'song-box';
+        box.style.backgroundColor = chartColors[i % chartColors.length];
+
+        const title = document.createElement('div');
+        title.textContent = `${song.title} - ${song.score}표`;
+
+        const button = document.createElement('button');
+        button.textContent = '투표하기 🎵';
+        button.onclick = () => sendVote(i);
+
+        const reasonList = document.createElement('div');
+        reasonList.className = 'reasons';
+        song.reasons?.forEach(reason => {
+          const p = document.createElement('p');
+          p.textContent = `- "${reason}"`;
+          reasonList.appendChild(p);
+        });
+
+        box.appendChild(title);
+        box.appendChild(button);
+        box.appendChild(reasonList);
+        container.appendChild(box);
+      });
+    }
+
+    function sendVote(index) {
+      const reason = prompt('이 노래에 투표한 이유는 무엇인가요? (선택사항)') || '';
+      socket.emit('vote', { index, reason });
+
+      const emoji = document.createElement('div');
+      emoji.textContent = '🎵';
+      emoji.className = 'emoji-float';
+      const songBox = document.querySelectorAll('.song-box')[index];
+      const rect = songBox.getBoundingClientRect();
+      emoji.style.position = 'absolute';
+      emoji.style.left = rect.left + 60 + 'px';
+      emoji.style.top = rect.top + 'px';
+      document.body.appendChild(emoji);
+      setTimeout(() => emoji.remove(), 1000);
+    }
+
+    function updateChart() {
+      const ctx = document.getElementById('voteChart').getContext('2d');
+      const labels = songs.map(song => song.title);
+      const data = songs.map(song => song.score);
+
+      if (voteChart) {
+        voteChart.data.labels = labels;
+        voteChart.data.datasets[0].data = data;
+        voteChart.update();
+      } else {
+        voteChart = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: '투표 수',
+              data: data,
+              backgroundColor: chartColors,
+              borderColor: '#fff',
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'bottom'
+              }
+            }
+          }
+        });
+      }
+    }
+  </script>
+</body>
+</html>
