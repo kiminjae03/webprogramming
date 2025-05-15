@@ -40,13 +40,19 @@
     let songs = [];
     let voteChart;
 
-    const chartColors = [
-      'rgba(255, 99, 132, 0.6)',
-      'rgba(54, 162, 235, 0.6)',
-      'rgba(255, 206, 86, 0.6)',
-      'rgba(75, 192, 192, 0.6)',
-      'rgba(153, 102, 255, 0.6)'
-    ];
+  const chartColors = [
+    'rgba(255, 99, 132, 0.6)',
+    'rgba(54, 162, 235, 0.6)',
+    'rgba(255, 206, 86, 0.6)',
+    'rgba(75, 192, 192, 0.6)',
+    'rgba(153, 102, 255, 0.6)',
+    'rgba(255, 159, 64, 0.6)',   // 오렌지
+    'rgba(199, 199, 199, 0.6)',  // 회색
+    'rgba(83, 102, 255, 0.6)',   // 진한 파랑
+    'rgba(255, 99, 71, 0.6)',    // 토마토색
+    'rgba(60, 179, 113, 0.6)'    // 미디엄 씨그린
+  ];
+
 
     socket.on('scoreUpdate', (updatedSongs) => {
       songs = updatedSongs;
@@ -66,9 +72,16 @@
         const title = document.createElement('div');
         title.textContent = `${song.title} - ${song.score}표`;
 
-        const button = document.createElement('button');
-        button.textContent = '투표하기 🎵';
-        button.onclick = () => sendVote(i);
+        const artist = document.createElement('div');
+        artist.textContent = `${song.artist}`;
+
+        const vote_button = document.createElement('button');
+        vote_button.textContent = '투표하기';
+        vote_button.onclick = () => sendVote(i);
+
+        const comment_button = document.createElement('button');
+        comment_button.textContent = '의견 남기기';
+        comment_button.onclick = () => sendComment(i);
 
         const reasonList = document.createElement('div');
         reasonList.className = 'reasons';
@@ -79,15 +92,16 @@
         });
 
         box.appendChild(title);
-        box.appendChild(button);
+        box.appendChild(artist);
+        box.appendChild(vote_button);
+        box.appendChild(comment_button);
         box.appendChild(reasonList);
         container.appendChild(box);
       });
     }
 
     function sendVote(index) {
-      const reason = prompt('이 노래에 투표한 이유는 무엇인가요? (선택사항)') || '';
-      socket.emit('vote', { index, reason });
+      socket.emit('vote', { index });
 
       const emoji = document.createElement('div');
       emoji.textContent = '🎵';
@@ -95,7 +109,23 @@
       const songBox = document.querySelectorAll('.song-box')[index];
       const rect = songBox.getBoundingClientRect();
       emoji.style.position = 'absolute';
-      emoji.style.left = rect.left + 60 + 'px';
+      emoji.style.left = (rect.left + rect.right) / 2 + 'px';
+      emoji.style.top = rect.top + 'px';
+      document.body.appendChild(emoji);
+      setTimeout(() => emoji.remove(), 1000);
+    }
+
+    function sendComment(index) {
+      const reason = prompt('댓글을 남겨주세요.') || '';
+      socket.emit('comment', { index, reason });
+
+      const emoji = document.createElement('div');
+      emoji.textContent = '💬';
+      emoji.className = 'emoji-float';
+      const songBox = document.querySelectorAll('.song-box')[index];
+      const rect = songBox.getBoundingClientRect();
+      emoji.style.position = 'absolute';
+      emoji.style.left = (rect.left + rect.right) / 2 + 'px';
       emoji.style.top = rect.top + 'px';
       document.body.appendChild(emoji);
       setTimeout(() => emoji.remove(), 1000);

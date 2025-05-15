@@ -2,18 +2,53 @@
   "songs": [
     {
       "id": "1",
-      "title": "OMG - NewJeans",
-      "votes": 12
+      "title": "너에게 닿기를",
+      "artist": "10CM"
     },
     {
       "id": "2",
-      "title": "Seven - Jungkook",
-      "votes": 37
+      "title": "like JENNIE",
+      "artist": "제니 (JENNIE)"
     },
     {
       "id": "3",
-      "title": "Hype Boy - NewJeans",
-      "votes": 21
+      "title": "Drowning",
+      "artist": "WOODZ"
+    },
+    {
+      "id": "4",
+      "title": "모르시나요(PROD.로코베리)",
+      "artist": "조째즈"
+    },
+    {
+      "id": "5",
+      "title": "TOO BAD (feat. Anderson .Paak)",
+      "artist": "G-DRAGON"
+    },
+    {
+      "id": "6",
+      "title": "나는 반딧불",
+      "artist": "황가람"
+    },
+    {
+      "id": "7",
+      "title": "오늘만 I LOVE YOU",
+      "artist": "BOYNEXTDOOR"
+    },
+    {
+      "id": "8",
+      "title": "HOME SWEET HOME (feat. 태양, 대성)",
+      "artist": "G-DRAGON"
+    },
+    {
+      "id": "9",
+      "title": "Whiplash",
+      "artist": "aespa"
+    },
+    {
+      "id": "10",
+      "title": "어제보다 슬픈 오늘",
+      "artist": "우디 (Woody)"
     }
   ]
 }
